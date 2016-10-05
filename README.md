@@ -18,3 +18,5 @@ I left enabled some developer 'Variable testers' to help with settings.
 To run, download the marthabob.love file, or clone/download this repo and change the .zip to .love and run Love2D.
 
 To get Love2D, go to http://www.love2d.org and download for your platform, or visit your devices App Store equivelant.
+
+![](screenshot.png?raw=true)
