@@ -10,8 +10,8 @@
 local T = {}
 T.__index = T
 
-atlas = require "assets/planetatlas"
-
+regatlas = require "assets/planetatlas"
+hdatlas = require "assets/hdplanets"
 
 -- String explode
 function stringExplode(str, div)
@@ -29,7 +29,8 @@ function stringExplode(str, div)
 end -- string string:explode
 
 -- New Planet 'size-color-number'
-function T:newPlanet(id, name, primary, distance )
+function T:newPlanet(id, name, primary, distance, speed,atlas )
+    atlas = atlas or regatlas
     local o = {}
     setmetatable(o, self)
     o.__index = self
@@ -42,7 +43,7 @@ function T:newPlanet(id, name, primary, distance )
     o.distance = distance
     o.center_x, o.center_y = 0, 0
     o.angle = 0
-    o.speed = 90
+    o.speed = speed
     o.scale = 1
     o.rotation = 0
     o.draw_x = 0
@@ -50,21 +51,27 @@ function T:newPlanet(id, name, primary, distance )
     return o
 end -- T:newPlanet
 
-function T.rotate(t, dt)
+function T:rotate(dt)
+    t = self
     --print("Rotating", t.name)
     t.angle = t.angle + t.speed*dt
     local sinn = math.sin(math.rad(t.angle))
     local coss = math.cos(math.rad(t.angle-180))
-    t.draw_x = t.center_x + (t.distance*sinn)
-    t.draw_y = t.center_y + (t.distance*coss)
+    t.draw_x = t.center_x + (t.distance*t.scale*sinn)
+    t.draw_y = t.center_y + (t.distance*t.scale*coss)
 end -- rotate
 
-function T.updateCenter(t)
+function T:updateCenter()
+   t = self
+   if t.primary == 0 then
+      return
+   end
    t.center_x = t.primary.draw_x or t.center_x
    t.center_y = t.primary.draw_y or t.center_y
 end
 
-function T.draw(t)
+function T:draw()
+   t = self
    love.graphics.draw(t.img, t.quad, t.draw_x, t.draw_y, t.rotation, t.scale,
                       t.scale, t.width/2, t.height/2)
 
