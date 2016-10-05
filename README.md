@@ -1,5 +1,7 @@
 # marthabob
-M.A.R.T.H.A. 808
+M.A.R.T.H.A. 808 is Maintenance and Repair Tasked Hovering Automoton designation number 808.
+
+
 Martha BOB is the story of a maintenance bot who, by unlucky chance, must takeover the Master Modulator role on a starship.
 The problem is, the Master Modulator contains 90% of the AI Network, with the Station Robots providing only 10% of the data. 
 For example, the Navigation robot needs Martha Bob's help in order to fly the ship!
