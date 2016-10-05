@@ -1,0 +1,10 @@
+;; Object marthabob
+;; EDE Project Files are auto generated: Do Not Edit
+(ede-proj-project "marthabob"
+  :file "Project.ede"
+  :name "marthabob"
+  :targets
+  (list
+    (ede-proj-target-makefile-program "all"
+      :name "all"
+      :path "")))
