@@ -12,8 +12,12 @@ just base movement using the arrow keys.
 I left enabled some developer 'Variable testers' to help with settings.  
 
 , and . control the 'Solar System' scale
+
 ; and ' control the 'Solar System' speed
+
 [ and ] control the Ship scale
+
+o toggle Orbit View
 
 To run, download the marthabob.love file, or clone/download this repo and change the .zip to .love and run Love2D.
 
