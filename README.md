@@ -11,19 +11,19 @@ just base movement using the arrow keys.
 
 I left enabled some developer 'Variable testers' to help with settings.  
 
-, and . control the 'Solar System' scale
+',' and '.' control the 'Solar System' scale
 
-; and ' control the 'Solar System' speed
+';' and ''' control the 'Solar System' speed
 
-[ and ] control the Ship scale
+'[' and ']' control the Ship scale
 
-o toggle Orbit View
+'o' toggle Orbit View
 
-g toggle Gravity Mode
+'g' toggle Gravity Mode
 
-+ increase Gravity Distance 
+'+' increase Gravity Distance 
 
-- decrease Gravity Distance
+'-' decrease Gravity Distance
 
 To run, download the marthabob.love file, or clone/download this repo and change the .zip to .love and run Love2D.
 
