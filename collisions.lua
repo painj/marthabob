@@ -7,6 +7,7 @@ function T:newWorld(...)
   t.__index = self
   setmetatable(t,self)
   t.objects = {}
+  t.objectIndex = {}
   t.areColliding = {}
   t.debug = false
   t.debugColorColl = {255,0,0}
@@ -19,6 +20,7 @@ function T:newCircle(x, y, radius)
   t = {}
   t.shape = 'circle'
   t.isColliding = false
+  t.collidesWith = {}
   t.x = x
   t.y = y
   t.radius = radius
@@ -30,31 +32,60 @@ function T:newRect(x,y,w,h)
   t = {}
   t.shape = 'rect'
   t.isColliding = false
+  t.collidesWith = {}
   t.x = x
   t.y = y
   t.w = w
   t.h = h
+  t.r = 0
   return t
 end
 
 -- Add objects to world
 function T:addToWorld(obj, s)
   self.objects[obj] = {object= obj, shape = s}
+  self.objectIndex[#self.objectIndex+1] = {object=obj, shape=s}
+end
+
+-- Check collision list and set true false on shape
+function T:setColliding(shape)
+  local result = 0
+  for k,v in pairs(shape.collidesWith) do
+    if v == true then
+      result = result +1
+     -- print("Collision! <-- in setColliding")
+    end
+  end
+  if result > 0 then
+    shape.isColliding = true
+  else
+    shape.isColliding = false
+  end
 end
 
 -- Draw all objects
 function T:draw()
-  for k,v in self.objects do
-    if v.isColliding then
+  for k,v in pairs(self.objectIndex) do
+    if v.shape.isColliding then
       love.graphics.setColor(255,0,0)
     else
       love.graphics.setColor(0,255,0)
     end
-    if v.shape == 'circle' then
-      love.graphics.circle('line',v.x,v.y,v.radius)
+    if v.shape.shape == 'circle' then
+      love.graphics.circle('line',v.shape.x,v.shape.y,v.shape.radius)
+    elseif (v.shape.shape == 'rect' and v.shape.shape.r ~= 0) then
+      love.graphics.push()
+      love.graphics.translate(v.shape.x,v.shape.y)
+      love.graphics.rotate(v.shape.r)
+      love.graphics.rectangle('line',0,0,v.shape.w,v.shape.h)
+      love.graphics.rotate(-v.shape.r)
+      love.graphics.pop()
     else
-      love.graphics.rect('line',v.x,v.y,v.w,v.h)
+      love.graphics.rectangle('line',v.shape.x,v.shape.y,v.shape.w,v.shape.h)
     end
+    love.graphics.setColor(255,255,255)
+  end
+
 end
 
 -- detect rect collisions
@@ -71,7 +102,7 @@ function T:checkRectColl(rectA, rectB)
 end
 
 --detect circle collisions by distance
-function checkDistColl(circleA, circleB)
+function T:checkDistColl(circleA, circleB)
   local dist = (circleA.x - circleB.x)^2 + (circleA.y - circleB.y)^2
   return dist <= (circleA.radius + circleB.radius)^2
 end
@@ -122,7 +153,7 @@ end
 -- run checkColl function based on shape
 function T:checkColl(objectA, objectB)
   if objectA.shape == 'circle' and objectB.shape == 'circle' then
-    return self:checkCircleColl(objectA, objectB)
+    return self:checkDistColl(objectA, objectB)
   elseif objectA.shape == 'circle' and objectB.shape == 'rect' then
     return self:checkDistCollCirRect(objectA, objectB)
   elseif objectA.shape == 'rect' and objectB.shape == 'circle' then
@@ -134,18 +165,36 @@ end
 
 -- check many objects
 function T:checkObjects()
-  for i=1, #self.objects-1 do
-    local partA = self.objects[i].shape
-    for j=i+1, #self.objects do
-      local partB = self.objects[j].shape
+
+  for i=1, #self.objectIndex-1 do
+    local partA = self.objectIndex[i].shape
+    for j=i+1, #self.objectIndex do
+      local partB = self.objectIndex[j].shape
       -- check collision between partA and partB
       if self:checkColl(partA, partB) then
-        partA.isColliding = true
+        --print("Collision!")
+        self.objectIndex[i].shape.collidesWith[self.objectIndex[j].object.name] = true
       else
-        partA.isColliding = false
+        --print(partA)
+        self.objectIndex[i].shape.collidesWith[self.objectIndex[j].object.name] = false
+        --partA.isColliding = false
+        --partB.isColliding = false
       end
     end
   end
+  for k,v in pairs(self.objectIndex) do
+    self:setColliding(v.shape)
+  end
+end
+
+-- Find Newton Force equation
+function T:force(shapeA, shapeB)
+  local dist = math.dist(shapeA.x, shapeA.y, shapeB.x, shapeB.y)
+  local massA, massB = shapeA.radius or shapeA.w/2, shapeB.radius or shapeB.w/2
+  local force = math.sqrt(massA * massB / dist*dist)/100
+  local angle = math.atan2(shapeA.y - shapeB.y,shapeA.x-shapeB.x) + math.rad(180)
+  local vx, vy = force*math.cos(angle), force*math.sin(angle)
+  return vx, vy
 end
 
 return T

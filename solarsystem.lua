@@ -1,5 +1,5 @@
 -- Solar System controls Planets
-
+require "mathutils"
 local T = {}
 T.__index=T
 
@@ -60,13 +60,24 @@ function T:drawPlanets()
   end
 end
 
+-- Draw distance to X,Y
+function T:drawDistance(x, y)
+  for _,p in pairs(self.drawOrder) do
+    local dist = math.dist(x,y,p.draw_x,p.draw_y)
+    local str = string.format("%.2f",dist)
+    love.graphics.print(str,p.draw_x,p.draw_y)
+  end
+end
 -- Draw collector
-function T:draw(...)
+function T:draw(arg)
+  local distx = arg['distx'] or 0
+  local disty = arg['disty'] or 0
   if self.showPlanets then
     self:drawPlanets()
   end
   if self.showOrbits then
     self:drawOrbits()
+    self:drawDistance(distx,disty)
   end
 end
 return T
