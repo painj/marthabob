@@ -1,4 +1,5 @@
 player = {
+  name = 'Ship',
   x = 150,
   y = 150,
   xvel = 0,
